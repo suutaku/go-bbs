@@ -1,0 +1,6 @@
+github.com/suutaku/bls12381 v0.0.0-20220909105542-17195eab9a7d h1:lhTIMN06HFGCGWfY9MlxMjWLP8JGpn9NfHIt0LXePPk=
+github.com/suutaku/bls12381 v0.0.0-20220909105542-17195eab9a7d/go.mod h1:HSGGOkqj/l77U4Zr8M7mXXSnUetVLz6+9doiTOUHdQc=
+golang.org/x/crypto v0.0.0-20220829220503-c86fa9a7ed90 h1:Y/gsMcFOcR+6S6f3YeMKl5g+dZMEWqcz5Czj/GWYbkM=
+golang.org/x/crypto v0.0.0-20220829220503-c86fa9a7ed90/go.mod h1:IxCIyHEi3zRg3s0A5j5BB6A9Jmi73HwBIUl50j+osU4=
+golang.org/x/sys v0.0.0-20220908164124-27713097b956 h1:XeJjHH1KiLpKGb6lvMiksZ9l0fVUh+AmGcm0nOMEBOY=
+golang.org/x/sys v0.0.0-20220908164124-27713097b956/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
