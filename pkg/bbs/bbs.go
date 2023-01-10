@@ -105,7 +105,7 @@ func (bbs *Bbs) VerifyProof(messagesBytes [][]byte, proof, nonce, pubKeyBytes []
 	}
 
 	if len(payload.revealed) > len(messages) {
-		return fmt.Errorf("payload revealed bigger from messages")
+		return fmt.Errorf("payload revealed bigger from messages except %d, got %d %d", len(messages), len(payload.revealed), payload.messagesCount)
 	}
 
 	revealedMessages := make(map[int]*SignatureMessage)
