@@ -1,11 +1,10 @@
-package test
+package bbs
 
 import (
 	"crypto/sha256"
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/suutaku/go-bbs/pkg/bbs"
 )
 
 var signature []byte
@@ -14,8 +13,8 @@ var message = []byte("hello,john")
 var err error
 
 func TestSign(t *testing.T) {
-	_, priv, _ := bbs.GenerateKeyPair(sha256.New, nil)
-	bbsins := bbs.NewBbs()
+	_, priv, _ := GenerateKeyPair(sha256.New, nil)
+	bbsins := NewBbs()
 
 	signature, err = bbsins.SignWithKey([][]byte{message}, priv)
 	require.NoError(t, err)
@@ -24,7 +23,7 @@ func TestSign(t *testing.T) {
 }
 
 func TestVerify(t *testing.T) {
-	bbsins := bbs.NewBbs()
+	bbsins := NewBbs()
 	err = bbsins.Verify([][]byte{message}, signature, pubkeyBytes)
 	require.NoError(t, err)
 	invalidMessage := append(message, byte('!'))

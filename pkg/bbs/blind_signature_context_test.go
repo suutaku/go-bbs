@@ -16,14 +16,6 @@ func TestBlindSignatureContext(t *testing.T) {
 	pub, err := UnmarshalPublicKey([]byte(pubBytes))
 	require.NoError(t, err)
 
-	// messages := [][]byte{
-	// 	[]byte("identity"),
-	// 	[]byte("name"),
-	// 	[]byte("gender"),
-	// 	[]byte("phone number"),
-	// 	[]byte("address"),
-	// }
-
 	generators, err := pub.ToPublicKeyWithGenerators(5)
 	require.NoError(t, err)
 
