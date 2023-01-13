@@ -12,12 +12,12 @@ func TestBlindSign(t *testing.T) {
 	require.NoError(t, err)
 	generators, err := pub.ToPublicKeyWithGenerators(5)
 	require.NoError(t, err)
-	blindFactory := createRandSignatureFr()
+	blindFactory := NewSignatureBliding()
 
 	msg := ParseSignatureMessage([]byte("message_0"))
 
 	builder := newCommitmentBuilder(0)
-	builder.add(generators.h0, blindFactory)
+	builder.add(generators.h0, blindFactory.ToFr())
 	builder.add(generators.h[0], msg.FR)
 
 	commitment := builder.build()
@@ -31,7 +31,7 @@ func TestBlindSign(t *testing.T) {
 
 	blindSig := NewBlindSignature(commitment, reveMsg, priv, generators)
 	require.NotNil(t, blindSig)
-	sig := blindSig.ToUnblinded((*SignatureBliding)(blindFactory))
+	sig := blindSig.ToUnblinded(blindFactory)
 	require.NotNil(t, sig)
 	reveMsg[0] = msg
 	allMsgs := []*SignatureMessage{

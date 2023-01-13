@@ -12,20 +12,19 @@ type BlindSignatureContext struct {
 	proofs     *ProofG1
 }
 
-func NewBlindSignatureContext(msgs map[int][]byte, generators *PublicKeyWithGenerators, nonce []byte) (*BlindSignatureContext, *bls12381.Fr, error) {
+func NewBlindSignatureContext(msgs map[int][]byte, generators *PublicKeyWithGenerators, nonce *ProofNonce) (*BlindSignatureContext, *SignatureBliding, error) {
 
-	nonceFr := frFromOKM(nonce)
-	blindFactory := createRandSignatureFr()
+	blindFactory := NewSignatureBliding()
 	builder := newCommitmentBuilder(len(msgs) + 1)
 
 	// h0^blinding_factor*hi^mi.....
-	builder.add(generators.h0, blindFactory)
+	builder.add(generators.h0, blindFactory.ToFr())
 
 	committing := NewProverCommittingG1()
 	committing.Commit(generators.h0)
 
 	secrets := make([]*bls12381.Fr, 0)
-	secrets = append(secrets, blindFactory)
+	secrets = append(secrets, blindFactory.ToFr())
 
 	for i := 0; i < generators.messagesCount; i++ {
 		if _, contains := msgs[i]; contains {
@@ -44,7 +43,7 @@ func NewBlindSignatureContext(msgs map[int][]byte, generators *PublicKeyWithGene
 
 	extra := make([]byte, 0)
 	extra = append(extra, g1.ToUncompressed(commitment)...)
-	extra = append(extra, nonceFr.ToBytes()...)
+	extra = append(extra, nonce.ToBytes()...)
 	challenge := frFromOKM(extra)
 	proofs := committed.GenerateProof(challenge, secrets)
 
@@ -85,8 +84,7 @@ func (bsc *BlindSignatureContext) FromBytes(input []byte) error {
 	return err
 }
 
-func (bsc *BlindSignatureContext) Verify(revealedMsg map[int]*SignatureMessage, generators *PublicKeyWithGenerators, nonce []byte) error {
-	nonceFr := frFromOKM(nonce)
+func (bsc *BlindSignatureContext) Verify(revealedMsg map[int]*SignatureMessage, generators *PublicKeyWithGenerators, nonce *ProofNonce) error {
 	bases := make([]*bls12381.PointG1, 0)
 	bases = append(bases, generators.h0)
 
@@ -103,7 +101,7 @@ func (bsc *BlindSignatureContext) Verify(revealedMsg map[int]*SignatureMessage, 
 
 	challengeBytes := make([]byte, 0)
 	challengeBytes = append(challengeBytes, g1.ToUncompressed(bsc.commitment)...)
-	challengeBytes = append(challengeBytes, nonceFr.ToBytes()...)
+	challengeBytes = append(challengeBytes, nonce.ToBytes()...)
 	challenge := frFromOKM(challengeBytes)
 	challenge.Sub(challenge, bsc.challenge)
 	g1.Sub(commitment, commitment, bsc.proofs.commitment)
@@ -113,7 +111,7 @@ func (bsc *BlindSignatureContext) Verify(revealedMsg map[int]*SignatureMessage, 
 	return fmt.Errorf("invlaid proof")
 }
 
-func (bsc *BlindSignatureContext) ToBlindSignature(msgs map[int][]byte, privKey *PrivateKey, generators *PublicKeyWithGenerators, nonce []byte) (*BlindSignature, error) {
+func (bsc *BlindSignatureContext) ToBlindSignature(msgs map[int][]byte, privKey *PrivateKey, generators *PublicKeyWithGenerators, nonce *ProofNonce) (*BlindSignature, error) {
 	if msgs == nil {
 		return nil, fmt.Errorf("messages was empty")
 	}

@@ -7,7 +7,16 @@ import (
 	"github.com/suutaku/bls12381"
 )
 
-type SignatureBliding bls12381.Fr
+type SignatureBliding struct {
+	*bls12381.Fr
+}
+
+func NewSignatureBliding() *SignatureBliding {
+	return &SignatureBliding{Fr: createRandSignatureFr()}
+}
+func (sb *SignatureBliding) ToFr() *bls12381.Fr {
+	return sb.Fr
+}
 
 type BlindSignature struct {
 	A *bls12381.PointG1
@@ -83,6 +92,6 @@ func (bs *BlindSignature) ToUnblinded(blinder *SignatureBliding) *Signature {
 		E: bs.E,
 		S: bls12381.NewFr(),
 	}
-	ret.S.Add(bs.S, (*bls12381.Fr)(blinder))
+	ret.S.Add(bs.S, blinder.ToFr())
 	return ret
 }

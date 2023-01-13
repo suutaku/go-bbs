@@ -280,6 +280,10 @@ type ProofNonce struct {
 	fr *bls12381.Fr
 }
 
+func NewProofNonce() *ProofNonce {
+	return &ProofNonce{createRandSignatureFr()}
+}
+
 // ParseProofNonce creates a new ProofNonce from bytes.
 func ParseProofNonce(proofNonceBytes []byte) *ProofNonce {
 	return &ProofNonce{
