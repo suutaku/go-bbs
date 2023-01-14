@@ -1,5 +1,10 @@
 # go-bbs
+[![Go Report Card](https://goreportcard.com/badge/github.com/suutaku/go-bbs)](https://goreportcard.com/report/github.com/suutaku/go-bbs)
+[![GitHub release](https://img.shields.io/github/release/suutaku/go-bbs?include_prereleases=&sort=semver&color=blue)](https://github.com/suutaku/go-bbs/releases/)
+[![License](https://img.shields.io/badge/License-MIT-blue)](#license)
+[![dependency - github.com/suutaku/bls12381](https://img.shields.io/badge/dependency-github.com%2Fsuutaku%2Fbls12381-blue)](https://pkg.go.dev/github.com/suutaku/bls12381)
  A **BBS++** signature pure go implementation refer to [hyperledger/ursa](https://github.com/hyperledger/ursa.git) (**Rust**) and [heyperledger/aries-framework-go](https://github.com/hyperledger/aries-framework-go.git) (**Without Blind sign**).
+ 
 
 ## Keygen
 
@@ -120,6 +125,10 @@ VerifyProof verifies BBS+ signature proof for one or more revealed messages.
 ```golang
  err := bbsInstance.VerifyProof(messagesBytes, proof, nonce, pubKeyBytes) 
 ```
+
+## License
+
+Released under [MIT](/LICENSE) by [@suutaku](https://github.com/suutaku).
 
 
 
