@@ -10,6 +10,7 @@ import (
 	"bytes"
 	"crypto"
 	"crypto/rand"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"hash"
@@ -170,7 +171,7 @@ func (pk *PublicKey) Equal(x crypto.PublicKey) bool {
 	}
 	pkBytes := g2.ToCompressed(pk.PointG2)
 	pkBytes2 := g2.ToCompressed(xx.PointG2)
-	return bytes.Compare(pkBytes, pkBytes2) == 0
+	return bytes.Equal(pkBytes, pkBytes2)
 }
 
 // GenerateKeyPair generates BBS+ PublicKey and PrivateKey pair.
@@ -222,4 +223,50 @@ func newHKDF(h func() hash.Hash, ikm, salt, info []byte, length int) ([]byte, er
 	}
 
 	return result, nil
+}
+
+const (
+	kty   = "EC"
+	crvG1 = "BLS12381_G1"
+	crvG2 = "BLS12381_G2"
+)
+
+type PublicKeyJWK struct {
+	Kty string `json:"kty"`
+	Crv string `json:"crv"`
+	X   string `json:"x"`
+}
+
+func (pbk *PublicKey) ToJWK() *PublicKeyJWK {
+	bs, err := pbk.Marshal()
+	if err != nil {
+		return nil
+	}
+	enc := base64.URLEncoding.EncodeToString(bs)
+	return &PublicKeyJWK{
+		Kty: kty,
+		Crv: crvG2,
+		X:   string(enc),
+	}
+}
+
+func (jwk *PublicKeyJWK) ToPublicKey() *PublicKey {
+	// check
+	if jwk.Kty != kty {
+		return nil
+	}
+	if jwk.Crv != crvG2 {
+		return nil
+	}
+	bs, err := base64.URLEncoding.DecodeString(jwk.X)
+	if err != nil {
+		return nil
+	}
+	pt, err := g2.FromCompressed(bs)
+	if err != nil {
+		return nil
+	}
+	return &PublicKey{
+		PointG2: pt,
+	}
 }
