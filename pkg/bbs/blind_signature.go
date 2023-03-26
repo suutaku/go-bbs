@@ -1,6 +1,8 @@
 package bbs
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -87,11 +89,25 @@ func (bs *BlindSignature) ToBytes() ([]byte, error) {
 }
 
 func (bs *BlindSignature) MarshalJSON() ([]byte, error) {
-	return bs.ToBytes()
+	b, err := bs.ToBytes()
+	if err != nil {
+		return nil, err
+	}
+	buf := bytes.Buffer{}
+	encoder := json.NewEncoder(&buf)
+	encoder.SetEscapeHTML(false)
+	encoder.Encode(b)
+	return buf.Bytes(), err
 }
 
 func (bs *BlindSignature) UnmarshalJSON(input []byte) error {
-	tmp, err := ParseBlindSignature(input)
+	buf := bytes.NewBuffer(input)
+	tBytes := make([]byte, 0)
+	err := json.NewDecoder(buf).Decode(&tBytes)
+	if err != nil {
+		return err
+	}
+	tmp, err := ParseBlindSignature(tBytes)
 	if err != nil {
 		return err
 	}
