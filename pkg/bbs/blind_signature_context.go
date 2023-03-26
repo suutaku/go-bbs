@@ -54,6 +54,14 @@ func NewBlindSignatureContext(msgs map[int][]byte, generators *PublicKeyWithGene
 	}, blindFactory, nil
 }
 
+func (bsc *BlindSignatureContext) MarshalJSON() ([]byte, error) {
+	return bsc.ToBytes(), nil
+}
+
+func (bsc *BlindSignatureContext) UnmarshalJSON(input []byte) error {
+	return bsc.FromBytes(input)
+}
+
 func (bsc *BlindSignatureContext) ToBytes() []byte {
 	buffer := append(g1.ToCompressed(bsc.commitment), bsc.challenge.ToBytes()...)
 	buffer = append(buffer, bsc.proofs.ToBytes()...)

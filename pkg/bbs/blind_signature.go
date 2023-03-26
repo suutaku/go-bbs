@@ -86,6 +86,21 @@ func (bs *BlindSignature) ToBytes() ([]byte, error) {
 	return bytes, nil
 }
 
+func (bs *BlindSignature) MarshalJSON() ([]byte, error) {
+	return bs.ToBytes()
+}
+
+func (bs *BlindSignature) UnmarshalJSON(input []byte) error {
+	tmp, err := ParseBlindSignature(input)
+	if err != nil {
+		return err
+	}
+	bs.A = tmp.A
+	bs.E = tmp.E
+	bs.S = tmp.S
+	return nil
+}
+
 func (bs *BlindSignature) ToUnblinded(blinder *SignatureBliding) *Signature {
 	ret := &Signature{
 		A: bs.A,
