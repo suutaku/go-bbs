@@ -1,6 +1,8 @@
 package bbs
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 
 	"github.com/suutaku/bls12381"
@@ -55,11 +57,30 @@ func NewBlindSignatureContext(msgs map[int][]byte, generators *PublicKeyWithGene
 }
 
 func (bsc *BlindSignatureContext) MarshalJSON() ([]byte, error) {
-	return bsc.ToBytes(), nil
+	b := bsc.ToBytes()
+	buf := bytes.Buffer{}
+	encoder := json.NewEncoder(&buf)
+	encoder.SetEscapeHTML(false)
+	err := encoder.Encode(b)
+	return buf.Bytes(), err
 }
 
 func (bsc *BlindSignatureContext) UnmarshalJSON(input []byte) error {
-	return bsc.FromBytes(input)
+	buf := bytes.NewBuffer(input)
+	tBytes := make([]byte, 0)
+	err := json.NewDecoder(buf).Decode(&tBytes)
+	if err != nil {
+		return err
+	}
+	tmp := &BlindSignatureContext{}
+	err = tmp.FromBytes(tBytes)
+	if err != nil {
+		return err
+	}
+	bsc.challenge = tmp.challenge
+	bsc.commitment = tmp.commitment
+	bsc.proofs = tmp.proofs
+	return nil
 }
 
 func (bsc *BlindSignatureContext) ToBytes() []byte {
